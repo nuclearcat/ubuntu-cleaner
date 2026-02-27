@@ -20,6 +20,7 @@ PYTHON_MAJOR_MINOR=$(PYTHON_MAJOR_VERSION)$(PYTHON_MINOR_VERSION)
 PYTHON_WITH_VERSION=python$(PYTHON_VERSION)
 DOCKER_IMAGE=gerardpuig/ubuntu-cleaner
 DOCKER_VOLUME=/tmp/.X11-unix:/tmp/.X11-unix
+DEB_BUILD_DEPENDENCIES=dh-python
 
 all: virtualenv
 
@@ -34,6 +35,20 @@ virtualenv: $(VIRTUAL_ENV)
 
 deb:
 	@# Launchpad fix to avoid debian build rule to execute unittest discover on ubuntucleaner main package.
+	@if ! command -v dpkg-query >/dev/null 2>&1; then \
+		echo "dpkg-query not found; Debian/Ubuntu build dependencies cannot be checked automatically."; \
+	else \
+		for pkg in $(DEB_BUILD_DEPENDENCIES); do \
+			if ! dpkg-query -W -f='$${Status}' $$pkg 2>/dev/null | grep -q "install ok installed"; then \
+				echo "Missing required build dependency: $$pkg"; \
+				MISSING=1; \
+			fi; \
+		done; \
+		if [ "$$MISSING" = 1 ]; then \
+			echo "Install missing dependency packages first: sudo apt install $(DEB_BUILD_DEPENDENCIES)"; \
+			exit 1; \
+		fi; \
+	fi
 	@rm -rf tests_build
 	@mkdir tests_build
 	@touch tests_build/__init__.py
