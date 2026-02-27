@@ -521,12 +521,25 @@ class JanitorPage(Gtk.VBox, GuiBuilder):
             child_iter = self.janitor_model.iter_children(iter)
 
             while child_iter:
-                scan_dict[child_iter] = checked
+                if self.janitor_model[child_iter][self.JANITOR_PLUGIN] is not None:
+                    scan_dict[child_iter] = checked
+                else:
+                    log.warning('Skipping scan task for empty janitor row: %s',
+                                self.janitor_model[child_iter][self.JANITOR_NAME])
                 child_iter = self.janitor_model.iter_next(child_iter)
         else:
-            scan_dict[iter] = checked
+            plugin = self.janitor_model[iter][self.JANITOR_PLUGIN]
+            if plugin is not None:
+                scan_dict[iter] = checked
+            else:
+                log.warning('Skipping scan task for empty janitor row: %s',
+                            self.janitor_model[iter][self.JANITOR_NAME])
 
         self.scan_tasks = list(scan_dict.items())
+
+        if not self.scan_tasks:
+            self.unset_busy()
+            return
 
         for plugin_iter, checked in self.scan_tasks:
             plugin = self.janitor_model[plugin_iter][self.JANITOR_PLUGIN]
@@ -541,6 +554,19 @@ class JanitorPage(Gtk.VBox, GuiBuilder):
         plugin_iter, checked = self.scan_tasks.pop(0)
 
         plugin = self.janitor_model[plugin_iter][self.JANITOR_PLUGIN]
+        if plugin is None:
+            log.warning('Skipping scan task for empty janitor row')
+            if self.scan_tasks:
+                self.do_scan_task()
+            else:
+                if self._total_count == 0:
+                    self.result_view.hide()
+                    self.happy_box.show()
+                else:
+                    self.result_view.show()
+                    self.happy_box.hide()
+                self.unset_busy()
+            return
         plugin.set_property('scan_finished', False)
 
         log.debug("do_scan_task for %s for status: %s" % (plugin, checked))
