@@ -44,7 +44,7 @@ def run_traceback(level, textview_only=False, text_only=False):
     '''Two level: fatal and error'''
     from ubuntucleaner.gui import GuiBuilder
 
-    output = StringIO.StringIO()
+    output = StringIO()
     exc = traceback.print_exc(file=output)
 
     worker = GuiBuilder('traceback.xml')

@@ -85,12 +85,32 @@ class OldKernelPlugin(JanitorPlugin):
                     return True
         return False
 
+    def _parse_kernel_version(self, version):
+        match = self.p_kernel_version.match(version)
+        if not match:
+            return (None, None)
+
+        base_version = match.group(0)
+        parts = base_version.split('-', 1)
+        if len(parts) != 2:
+            return (None, None)
+
+        return parts
+
     @log_func(log)
     def _compare_kernel_version(self, version):
-        c1, c2 = self.current_kernel_version.split('-')
-        p1, p2 = version.split('-')
+        c1, c2 = self._parse_kernel_version(self.current_kernel_version)
+        if c1 is None:
+            return False
+
+        p1, p2 = self._parse_kernel_version(version)
+        if p1 is None:
+            return False
+
+        c2 = int(c2)
+        p2 = int(p2)
         if c1 == p1:
-            return int(c2) > int(p2)
+            return c2 > p2
         else:
             return LooseVersion(c1) > LooseVersion(p1)
 

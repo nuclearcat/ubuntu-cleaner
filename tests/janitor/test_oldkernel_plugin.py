@@ -24,6 +24,11 @@ class TestOldKernelPlugin(unittest.TestCase):
         plugin = OldKernelPlugin()
         self.assertEqual(plugin.current_kernel_version, 'undefined')
 
+    def test_version_compare_with_invalid_current_version(self):
+        self.oldkernel_plugin.current_kernel_version = 'invalid'
+
+        self.assertFalse(self.oldkernel_plugin.is_old_kernel_package('linux-image-2.6.38-9-generic'))
+
     def test_get_cruft(self):
         with mock.patch.object(OldKernelPlugin, 'emit') as mocked_emit:
             self.oldkernel_plugin.get_cruft()
