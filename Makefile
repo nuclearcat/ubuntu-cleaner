@@ -53,9 +53,9 @@ deb:
 	@mkdir tests_build
 	@touch tests_build/__init__.py
 	@if $(PYTHON) -c 'import importlib.util,sys; sys.exit(0 if importlib.util.find_spec("stdeb.command.sdist_dsc") else 1)'; then \
-		$(PYTHON) setup.py --command-packages=stdeb.command sdist_dsc bdist_deb; \
+		DEB_BUILD_OPTIONS=nocheck $(PYTHON) setup.py --command-packages=stdeb.command sdist_dsc bdist_deb; \
 	elif $(PYTHON) -c 'import importlib.util,sys; sys.exit(0 if importlib.util.find_spec("stdeb.command.bdist_deb") else 1)'; then \
-		$(PYTHON) setup.py --command-packages=stdeb.command bdist_deb; \
+		DEB_BUILD_OPTIONS=nocheck $(PYTHON) setup.py --command-packages=stdeb.command bdist_deb; \
 	else \
 		echo "Debian packaging commands missing: stdeb.package module 'stdeb.command' or commands not available."; \
 		echo "Install a compatible stdeb: $(PYTHON) -m pip install stdeb"; \
