@@ -11,7 +11,7 @@ import dbus.mainloop.glib
 import gi
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
-from gi.repository import GObject, Gdk, Gtk, Gio
+from gi.repository import Gtk, Gio
 
 from ubuntucleaner.utils import system
 from ubuntucleaner.settings.constants import VERSION, IS_INSTALLED
@@ -66,9 +66,7 @@ if __name__ == "__main__":
     if options.debug or not IS_INSTALLED:
         enable_debugging()
 
-    # Required to use existing system daemons such Apt Daemon
-    Gdk.threads_init()
-    GObject.threads_init()
+    # Required to use existing system daemons such as Apt Daemon
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     dbus.mainloop.glib.threads_init()
 
