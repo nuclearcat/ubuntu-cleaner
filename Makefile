@@ -1,6 +1,6 @@
 VIRTUAL_ENV ?= venv
 PIP=$(VIRTUAL_ENV)/bin/pip
-PYTHON=$(VIRTUAL_ENV)/bin/python
+PYTHON ?= $(if $(wildcard $(VIRTUAL_ENV)/bin/python),$(VIRTUAL_ENV)/bin/python,python3)
 PYTHON_MAJOR_VERSION=3
 PYTHON_MINOR_VERSION=6
 COVERALLS=$(VIRTUAL_ENV)/bin/coveralls
