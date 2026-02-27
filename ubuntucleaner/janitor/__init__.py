@@ -50,7 +50,7 @@ class PackageObject(CruftObject):
         return filesizeformat(self.size)
 
     def get_icon(self):
-        return icon.get_from_name('deb')
+        return icon.get_from_name('package-x-generic', alter='application-x-debian-package')
 
     def get_package_name(self):
         return self.package_name

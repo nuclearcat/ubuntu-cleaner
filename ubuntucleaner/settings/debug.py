@@ -4,11 +4,10 @@ import traceback
 from io import StringIO
 
 import gi
+gi.require_version("Notify", "0.7")
 from gi.repository import Gdk, Gtk, Notify
 from ubuntucleaner.settings.constants import CONFIG_ROOT
 from ubuntucleaner.utils import system
-
-gi.require_version("Notify", "0.7")
 
 
 #The terminal has 8 colors with codes from 0 to 7
