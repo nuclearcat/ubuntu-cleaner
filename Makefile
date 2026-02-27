@@ -35,6 +35,7 @@ virtualenv: $(VIRTUAL_ENV)
 
 deb:
 	@# Launchpad fix to avoid debian build rule to execute unittest discover on ubuntucleaner main package.
+	@rm -rf deb_dist
 	@if ! command -v dpkg-query >/dev/null 2>&1; then \
 		echo "dpkg-query not found; Debian/Ubuntu build dependencies cannot be checked automatically."; \
 	else \

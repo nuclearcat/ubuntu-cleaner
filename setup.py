@@ -9,6 +9,8 @@ setup(
     long_description='Keep your ubuntu system clean has never been so easy!',
     author='Gerard Puig',
     author_email='gerardpuigdev@gmail.com',
+    maintainer='Denys Fedoryshchenko',
+    maintainer_email='nuclearcat@nuclearcat.com',
     scripts=['ubuntu-cleaner'],
     packages=find_packages(exclude=['tests']),
     test_suite='tests_build',
