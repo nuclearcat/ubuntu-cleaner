@@ -10,10 +10,18 @@ icontheme = Gtk.IconTheme.get_default()
 icontheme.append_search_path('/usr/share/ccsm/icons')
 
 DEFAULT_SIZE = 24
+DEFAULT_ICON = 'application-x-executable'
 
 
-def get_from_name(name='gtk-execute',
-                  alter='gtk-execute',
+def _icon_exists(name, size=DEFAULT_SIZE):
+    try:
+        return icontheme.lookup_icon(name, size, Gtk.IconLookupFlags.USE_BUILTIN) is not None
+    except Exception:
+        return False
+
+
+def get_from_name(name=DEFAULT_ICON,
+                  alter=DEFAULT_ICON,
                   size=DEFAULT_SIZE,
                   force_reload=False,
                   only_path=False):
@@ -28,6 +36,8 @@ def get_from_name(name='gtk-execute',
         return path
 
     try:
+        if not _icon_exists(name, size):
+            raise Exception("Icon '%s' not present in theme" % name)
         pixbuf = icontheme.load_icon(name, size, 0)
     except Exception as e:
         log.warning(e)
@@ -35,11 +45,17 @@ def get_from_name(name='gtk-execute',
 
         while not pixbuf:
             try:
+                if not _icon_exists(alter, size):
+                    raise Exception("Icon '%s' not present in theme" % alter)
                 pixbuf = icontheme.load_icon(alter, size, 0)
             except Exception as e:
                 log.error(e)
                 icons = icontheme.list_icons(None)
-                alter = icons[random.randint(0, len(icons) - 1)]
+                if icons:
+                    alter = icons[random.randint(0, len(icons) - 1)]
+                else:
+                    log.error('No icons in current theme')
+                    break
 
     if pixbuf.get_height() != size:
         return pixbuf.scale_simple(size, size, GdkPixbuf.InterpType.BILINEAR)
@@ -51,6 +67,8 @@ def get_from_list(list, size=DEFAULT_SIZE):
     pixbuf = None
     for name in list:
         try:
+            if not _icon_exists(name, size):
+                raise Exception("Icon '%s' not present in theme" % name)
             pixbuf = icontheme.load_icon(name,
                                          size,
                                          Gtk.IconLookupFlags.USE_BUILTIN)
@@ -102,7 +120,8 @@ def guess_from_path(filepath, size=DEFAULT_SIZE):
         return get_from_name('folder', size)
 
     try:
-        mime_type, result = Gio.content_type_guess(filepath, open(filepath).read(10))
+        with open(filepath, 'rb') as f:
+            mime_type, result = Gio.content_type_guess(filepath, f.read(10))
         return get_from_mime_type(mime_type, size)
     except Exception as e:
         log.error('guess_from_path failed: %s' % e)

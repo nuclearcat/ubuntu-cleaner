@@ -869,7 +869,7 @@ class JanitorPage(Gtk.VBox, GuiBuilder):
         app_text = _('Apps')
 
         iter = self.janitor_model.append(None, (None,
-                                                icon.get_from_name('gnome-app-install'),
+                                                icon.get_from_name('system-software-install'),
                                                 app_text,
                                                 "<b><big>%s</big></b>" % app_text,
                                                 None,

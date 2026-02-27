@@ -15,13 +15,16 @@ class OldKernelPlugin(JanitorPlugin):
     __title__ = _('Old Kernel')
     __category__ = 'system'
 
-    p_kernel_version = re.compile('[.\d]+-\d+')
+    p_kernel_version = re.compile('[.\\d]+(?:-\\d+)?')
     p_kernel_package = re.compile('linux-[a-z\-]+')
 
     def __init__(self):
         JanitorPlugin.__init__(self)
         try:
-            self.current_kernel_version = self.p_kernel_version.findall('-'.join(os.uname()[2].split('-')[:2]))[0]
+            current_kernel = os.uname()[2]
+            self.current_kernel_version = self._parse_kernel_version(current_kernel)[0]
+            if self.current_kernel_version is None:
+                raise ValueError("Could not parse kernel version from %s" % current_kernel)
             log.debug("the current_kernel_version is %s" % self.current_kernel_version)
         except Exception as e:
             log.error(e)
@@ -86,12 +89,14 @@ class OldKernelPlugin(JanitorPlugin):
         return False
 
     def _parse_kernel_version(self, version):
-        match = self.p_kernel_version.match(version)
+        match = self.p_kernel_version.search(version)
         if not match:
             return (None, None)
 
         base_version = match.group(0)
         parts = base_version.split('-', 1)
+        if len(parts) == 1:
+            return (parts[0], '0')
         if len(parts) != 2:
             return (None, None)
 

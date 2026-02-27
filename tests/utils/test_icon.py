@@ -39,7 +39,7 @@ class TestIconModule(unittest.TestCase):
             m_load_icon.return_value = m_pixbuf
             pixbuf = get_from_name()
         self.assertEqual(
-            m_load_icon.call_args_list, [mock.call("gtk-execute", 24, 0)]
+            m_load_icon.call_args_list, [mock.call("application-x-executable", 24, 0)]
         )
         self.assertEqual(pixbuf, m_pixbuf)
 
@@ -62,14 +62,14 @@ class TestIconModule(unittest.TestCase):
             get_from_name(only_path=True)
         self.assertEqual(
             m_lookup_icon.call_args_list,
-            [mock.call("gtk-execute", 24, Gtk.IconLookupFlags.USE_BUILTIN)]
+            [mock.call("application-x-executable", 24, Gtk.IconLookupFlags.USE_BUILTIN)]
         )
 
     def test_get_from_name_only_path(self):
         """Setting `lookup_icon()` should only be caled when `only_path` is set."""
         self.helper_test_get_from_name_only_path(
             True,
-            [mock.call("gtk-execute", 24, Gtk.IconLookupFlags.USE_BUILTIN)]
+            [mock.call("application-x-executable", 24, Gtk.IconLookupFlags.USE_BUILTIN)]
         )
         self.helper_test_get_from_name_only_path(False, [])
 
@@ -81,7 +81,7 @@ class TestIconModule(unittest.TestCase):
             pixbuf = get_from_name()
         self.assertEqual(
             m_load_icon.call_args_list,
-            [mock.call("gtk-execute", 24, 0), mock.call("gtk-execute", 24, 0)]
+            [mock.call("application-x-executable", 24, 0), mock.call("application-x-executable", 24, 0)]
         )
         self.assertEqual(m_log.warning.call_count, 1)
         self.assertEqual(m_log.error.call_count, 0)
@@ -92,7 +92,7 @@ class TestIconModule(unittest.TestCase):
             pixbuf = get_from_name()
         self.assertEqual(
             m_load_icon.call_args_list,
-            [mock.call("gtk-execute", 24, 0), mock.call("gtk-execute", 24, 0), mock.call(mock.ANY, 24, 0)]
+            [mock.call("application-x-executable", 24, 0), mock.call("application-x-executable", 24, 0), mock.call(mock.ANY, 24, 0)]
         )
         self.assertEqual(m_log.warning.call_count, 1)
         self.assertEqual(m_log.error.call_count, 1)
