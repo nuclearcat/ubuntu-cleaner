@@ -71,4 +71,12 @@ if __name__ == "__main__":
     dbus.mainloop.glib.threads_init()
 
     app = UbuntuCleanerApp()
-    app.run(sys.argv)
+    try:
+        app.run(sys.argv)
+    except (KeyboardInterrupt, TypeError) as exc:
+        if isinstance(exc, TypeError):
+            # Some environments raise a TypeError from signal cleanup when
+            # interrupting Gtk.Application with Ctrl+C. Treat this as a normal exit.
+            pass
+        app.log.debug("Exiting due to user interrupt")
+        app.quit()
