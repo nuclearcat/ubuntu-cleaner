@@ -6,6 +6,7 @@ setup(
     name='ubuntu-cleaner',
     version=__version__,
     description='Keep your ubuntu system clean has never been so easy!',
+    long_description='Keep your ubuntu system clean has never been so easy!',
     author='Gerard Puig',
     author_email='gerardpuigdev@gmail.com',
     scripts=['ubuntu-cleaner'],

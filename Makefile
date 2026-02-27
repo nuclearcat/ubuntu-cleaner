@@ -33,9 +33,10 @@ $(VIRTUAL_ENV):
 virtualenv: $(VIRTUAL_ENV)
 
 deb:
-	# Launchpad fix to avoid debian build rule to execute unittest discover on ubuntucleaner main package.
-	mkdir tests_build
-	touch tests_build/__init__.py
+	@# Launchpad fix to avoid debian build rule to execute unittest discover on ubuntucleaner main package.
+	@rm -rf tests_build
+	@mkdir tests_build
+	@touch tests_build/__init__.py
 	@if $(PYTHON) -c 'import importlib.util,sys; sys.exit(0 if importlib.util.find_spec("stdeb.command.sdist_dsc") else 1)'; then \
 		$(PYTHON) setup.py --command-packages=stdeb.command sdist_dsc bdist_deb; \
 	elif $(PYTHON) -c 'import importlib.util,sys; sys.exit(0 if importlib.util.find_spec("stdeb.command.bdist_deb") else 1)'; then \
@@ -46,7 +47,7 @@ deb:
 		echo "Alternative (Debian/Ubuntu): sudo apt install python3-stdeb"; \
 		exit 1; \
 	fi
-	rm -rf tests_build
+	@rm -rf tests_build
 
 clean:
 	@rm -rf deb_dist dist ubuntu_cleaner.egg-info
