@@ -36,7 +36,16 @@ deb:
 	# Launchpad fix to avoid debian build rule to execute unittest discover on ubuntucleaner main package.
 	mkdir tests_build
 	touch tests_build/__init__.py
-	$(PYTHON) setup.py --command-packages=stdeb.command sdist_dsc bdist_deb
+	@if $(PYTHON) -c 'import importlib.util,sys; sys.exit(0 if importlib.util.find_spec("stdeb.command.sdist_dsc") else 1)'; then \
+		$(PYTHON) setup.py --command-packages=stdeb.command sdist_dsc bdist_deb; \
+	elif $(PYTHON) -c 'import importlib.util,sys; sys.exit(0 if importlib.util.find_spec("stdeb.command.bdist_deb") else 1)'; then \
+		$(PYTHON) setup.py --command-packages=stdeb.command bdist_deb; \
+	else \
+		echo "Debian packaging commands missing: stdeb.package module 'stdeb.command' or commands not available."; \
+		echo "Install a compatible stdeb: $(PYTHON) -m pip install stdeb"; \
+		echo "Alternative (Debian/Ubuntu): sudo apt install python3-stdeb"; \
+		exit 1; \
+	fi
 	rm -rf tests_build
 
 clean:
