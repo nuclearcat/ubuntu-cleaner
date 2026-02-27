@@ -803,11 +803,13 @@ class JanitorPage(Gtk.VBox, GuiBuilder):
         else:
             self.janitor_model[plugin_iter][self.JANITOR_DISPLAY] = "[0] %s" % plugin.get_title()
 
+    @post_ui
     def on_plugin_cleaned(self, plugin, cleaned, plugin_iter):
         #TODO should accept the cruft_list
         plugin.set_property('clean_finished', True)
         self.janitor_model[plugin_iter][self.JANITOR_DISPLAY] = "[0] %s" % plugin.get_title()
 
+    @post_ui
     def on_clean_error(self, plugin, error, plugin_iter):
         #TODO response to user?
         self.janitor_model[plugin_iter][self.JANITOR_ICON] = icon.get_from_name('error', size=16)
