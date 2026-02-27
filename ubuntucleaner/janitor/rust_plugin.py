@@ -18,20 +18,34 @@ class RustBuildCachePlugin(JanitorPlugin):
         '~/.cargo/registry/src',
         '~/.cargo/git/db',
         '~/.rustup/downloads',
+        '~/.rustup/tmp',
+    )
+    install_paths = (
+        '~/.cargo',
+        '~/.rustup',
     )
 
     @classmethod
     def is_active(cls):
-        return cls.__utactive__ and any(cls._discover_cache_paths())
+        return cls.__utactive__ and any(os.path.exists(os.path.expanduser(path)) for path in cls.install_paths)
 
     @classmethod
     def _discover_cache_paths(cls):
         paths = []
         for path in cls.cache_paths:
             expanded = os.path.expanduser(path)
-            if os.path.exists(expanded):
+            if os.path.isdir(expanded):
                 paths.append(expanded)
-        return paths
+
+        # Keep only non-overlapping cache paths.
+        deduped = []
+        for path in sorted(paths):
+            if any(path.startswith(existing + os.sep) for existing in deduped):
+                continue
+            deduped = [existing for existing in deduped if not existing.startswith(path + os.sep)]
+            deduped.append(path)
+
+        return deduped
 
     def get_cruft(self):
         count = 0
